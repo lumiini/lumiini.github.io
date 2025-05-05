@@ -5,32 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lumiini's Page</title>
     <style>
-        /* Basic styling for the body */
+        /* Basic styling for the body - Dark Mode */
         body {
             margin: 0; /* Remove default margin */
             padding: 0; /* Remove default padding */
             font-family: sans-serif; /* Use a common sans-serif font */
-            color: #333; /* Default text color */
+            color: #eee; /* Light text color for dark mode */
+            background-color: #1a1a1a; /* Dark background color */
             display: flex; /* Use flexbox to center content */
             justify-content: center; /* Center horizontally */
             align-items: center; /* Center vertically */
             min-height: 100vh; /* Minimum height of the viewport */
             background-image: url('a.jpg'); /* Set the background image */
             background-repeat: repeat; /* Tile the image */
-            background-size: 50px 50px; /* Maintain original size for tiling */
-            /* You might want to adjust background-size if the image is too large/small */
-            /* background-size: cover; /* Use cover if you want the image to cover the whole background without tiling */
-            /* background-size: contain; /* Use contain if you want the image to fit within the background */
+            background-size: 50px 50px; /* Set the size of each tiled image (width height) */
+            /* Adjust '50px 50px' to your desired size */
+            /* You might want to add a background-blend-mode or overlay for better contrast with the tiled image in dark mode */
         }
 
-        /* Style for the container holding the message */
+        /* Style for the container holding the message - Dark Mode */
         .message-container {
-            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background for readability */
+            background-color: rgba(50, 50, 50, 0.8); /* Darker semi-transparent background for readability */
             padding: 20px; /* Add some padding around the text */
             border-radius: 10px; /* Rounded corners for the container */
             text-align: center; /* Center the text inside the container */
             max-width: 80%; /* Limit the width of the container */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add a subtle shadow, maybe slightly darker for dark mode */
+            color: #eee; /* Ensure text inside container is light */
         }
 
         /* Style for the message text */
