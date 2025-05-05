@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumiini's Page</title>
+    <title>My page</title>
     <style>
         /* Basic styling for the body - Dark Mode */
         body {
@@ -60,6 +60,34 @@
             margin: 0;
             font-size: 1.5em;
         }
+
+        /* Style for the language selector container */
+        .language-selector {
+            position: absolute;
+            top: 20px; /* Distance from the top */
+            right: 20px; /* Distance from the right */
+            background-color: rgba(50, 50, 50, 0.8); /* Match message container background */
+            padding: 10px 15px; /* Padding around the selector */
+            border-radius: 10px; /* Match message container border-radius */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Match message container shadow */
+            z-index: 2; /* Ensure it's above everything else */
+        }
+
+        /* Style for the select element */
+        .language-selector select {
+            background-color: transparent; /* Make select background transparent */
+            border: none; /* Remove default border */
+            color: #eee; /* Light text color */
+            font-size: 1em; /* Adjust font size */
+            cursor: pointer; /* Indicate it's clickable */
+            outline: none; /* Remove outline on focus */
+        }
+
+        /* Style for the options within the select */
+        .language-selector select option {
+            background-color: #333; /* Dark background for dropdown options */
+            color: #eee; /* Light text for dropdown options */
+        }
     </style>
 </head>
 <body>
@@ -67,8 +95,15 @@
     <div class="tile-container">
         </div>
 
+    <div class="language-selector">
+        <select id="language-select">
+            <option value="en">English</option>
+            <option value="fi">Suomi</option>
+        </select>
+    </div>
+
     <div class="message-container">
-        <h1>こんにちは</h1>
+        <h1>こんにちは<h1>
         <h1>Hey, I'm Lumiini, I'm interested in linux (i guess) also why are you here?</h1>
     </div>
 
@@ -84,36 +119,16 @@
             const numRows = Math.ceil(viewportHeight / tileSize);
 
             // Create and append tiles
-            for (let i = 0; i < numRows; i++) {
-                for (let j = 0; j < numCols; j++) {
-                    const tile = document.createElement('div');
-                    tile.classList.add('tile');
-
-                    // Position the tile
-                    tile.style.top = `${i * tileSize}px`;
-                    tile.style.left = `${j * tileSize}px`;
-
-                    // Randomly rotate the tile
-                    const rotation = Math.floor(Math.random() * 4) * 90; // 0, 90, 180, or 270 degrees
-                    tile.style.transform = `rotate(${rotation}deg)`;
-
-                    tileContainer.appendChild(tile);
-                }
-            }
-
-            // Optional: Regenerate tiles on window resize for responsiveness
-            window.addEventListener('resize', () => {
+            function createTiles() {
                 // Clear existing tiles
                 tileContainer.innerHTML = '';
+                const currentViewportWidth = window.innerWidth;
+                const currentViewportHeight = window.innerHeight;
+                const currentNumCols = Math.ceil(currentViewportWidth / tileSize);
+                const currentNumRows = Math.ceil(currentViewportHeight / tileSize);
 
-                // Recalculate and create new tiles
-                const newViewportWidth = window.innerWidth;
-                const newViewportHeight = window.innerHeight;
-                const newNumCols = Math.ceil(newViewportWidth / tileSize);
-                const newNumRows = Math.ceil(newViewportHeight / tileSize);
-
-                for (let i = 0; i < newNumRows; i++) {
-                    for (let j = 0; j < newNumCols; j++) {
+                for (let i = 0; i < currentNumRows; i++) {
+                    for (let j = 0; j < currentNumCols; j++) {
                         const tile = document.createElement('div');
                         tile.classList.add('tile');
                         tile.style.top = `${i * tileSize}px`;
@@ -123,7 +138,32 @@
                         tileContainer.appendChild(tile);
                     }
                 }
+            }
+
+            createTiles(); // Create tiles on initial load
+
+            // Regenerate tiles on window resize for responsiveness
+            window.addEventListener('resize', createTiles);
+
+            // Language selector logic
+            const languageSelect = document.getElementById('language-select');
+
+            languageSelect.addEventListener('change', (event) => {
+                const selectedLanguage = event.target.value;
+                if (selectedLanguage === 'en') {
+                    window.location.href = 'index.html'; // Navigate to index.html for English
+                } else if (selectedLanguage === 'fi') {
+                    window.location.href = 'fi.html'; // Navigate to fi.html for Finnish
+                }
             });
+
+            // Optional: Set initial selector value based on current page
+            const currentPage = window.location.pathname.split('/').pop();
+            if (currentPage === 'fi.html') {
+                languageSelect.value = 'fi';
+            } else {
+                languageSelect.value = 'en';
+            }
         });
     </script>
 
