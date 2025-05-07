@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTY Simulation</title>
-    <style>
+    <title>Hello</title> <style>
         body {
             background-color: #000; /* Black background */
             color: #fff; /* White text */
@@ -234,6 +233,10 @@
 
             const statusText = '<span class="status-blue">[</span><span class="status-green"> started </span><span class="status-blue">]</span>';
 
+            // Print the "Starting cinit 0.0.2 alpha" message in blue before the init sequence
+            print('<span class="status-blue">Starting cinit 0.0.2 alpha</span>');
+            print(""); // Add a blank line after the starting message
+
             let i = 0;
             function displayNextMessage() {
                 if (i < initMessages.length) {
@@ -260,7 +263,8 @@
                 }
             }
 
-            displayNextMessage(); // Start the sequence
+            // Start displaying the init messages after a short delay
+            setTimeout(displayNextMessage, 500); // Delay before starting init messages
         }
 
         // Function to handle the successful auto-login (now triggers password typing)
@@ -305,7 +309,7 @@
                          // Hide the input line before redirecting
                          mainInputLine.classList.add('hidden');
                          setTimeout(() => {
-                             window.location.href = 'home.html'; // Redirect to home.html
+                             window.location.href = 'https://lumiini.github.io/lumiini'; // Redirect to lumiini.github.io/lumiini
                          }, 1000); // Delay before redirecting
                          break;
                     case '4': // Updated case number
