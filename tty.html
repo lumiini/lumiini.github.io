@@ -102,6 +102,38 @@
         .status-green {
             color: #90EE90; /* Light Green - less vibrant */
         }
+
+        /* New style for less vibrant red */
+        .status-red-muted {
+            color: #CD5C5C; /* IndianRed - less vibrant red */
+        }
+
+        /* New style for username color (mix of blue/green approximation) */
+        .status-username {
+             color: #ADD8E6; /* LightBlue - approximation of blue/green mix */
+        }
+
+        /* Styles for Neofetch output layout */
+        .neofetch-output {
+            display: flex; /* Use flexbox for the two columns */
+            margin-bottom: 10px; /* Add some space below neofetch */
+        }
+
+        .neofetch-logo {
+            white-space: pre; /* Preserve whitespace in ASCII art */
+            font-family: 'Courier New', Courier, monospace; /* Ensure monospace font */
+            margin-right: 20px; /* Space between logo and info */
+            flex-shrink: 0; /* Prevent logo from shrinking */
+        }
+
+        .neofetch-info {
+             flex-grow: 1; /* Allow info to take available space */
+        }
+
+        .neofetch-info p {
+            margin: 0; /* Remove default paragraph margin */
+            padding: 0;
+        }
     </style>
 </head>
 <body>
@@ -116,6 +148,8 @@
         const outputDiv = document.getElementById('output');
         const mainInput = document.getElementById('main-input');
         const mainInputLine = document.getElementById('main-input-line');
+
+        let uptimeInterval = null; // Variable to hold the uptime interval
 
         // Function to print text to the output area
         function print(text) {
@@ -154,12 +188,13 @@
 
             // Print the options after the prompt is visible
             // Color the first line green and indent the list items
-            print('<span class="status-green">Enter a number (1-5) or the command:</span>'); // Updated prompt text to 1-5
+            print('<span class="status-green">Enter a number (1-6) or the command:</span>'); // Updated prompt text to 1-6
             print("  1) cat lumiini.txt"); // Indented
             print("  2) finnish");         // Indented
             print("  3) homepage");        // Added new option
             print("  4) Startx");          // Updated option number and text
-            print("  5) clear");           // Added new clear option
+            print("  5) neofetch");        // Added new neofetch option
+            print("  6) clear");           // Updated clear option number
         }
 
         // Function to simulate auto-typing the username directly into the output
@@ -286,6 +321,116 @@
              setTimeout(showMainPrompt, 500); // Delay before showing main prompt
         }
 
+        // Function to simulate neofetch output
+        function showNeofetch() {
+            // Clear previous neofetch output if any
+            if (uptimeInterval) {
+                clearInterval(uptimeInterval);
+                uptimeInterval = null;
+            }
+
+            const logoLines = [
+                "             .',;::cc::;',.",
+                "           .,',;::clclclclclc::;,.",
+                "     .',;::clclclclclclclclclclclclc::;,.",
+                "   .',;::clclclclclclclclclclclclclclclclc::;,.",
+                "   ;::clclclclclclclclclclclclclclclclclclclclc;",
+                "  .clclclclclclclclclclclclclclclclclclclclclclc.",
+                "  .clclclclclclclclclclclclclclclclclclclclclclc.",
+                "  .clclclclclclclclclclclclclclclcl;::clclclclclc.",
+                "  .clclclclclclclclclclclclclclcl;::;::clclclclclc.",
+                "  .clclclcl;::clclclclclclclclcl;::;::clclclclclc.",
+                "  ;::clclcl;::;::clclclclclclclcl;::;::clclclclclc;",
+                "  ;::clclclcl;::;::clclclclclclcl;::;::clclclclclc;",
+                "  `::clclclclcl;::;::clclclclclclcl;::;::clclclclc;'",
+                "   `.::clclclclclcl;::;::clclclclclcl;::;::clclclc.'",
+                "     `.::clclclclclclcl;::;::clclclclclcl;::;',.'",
+                "       `.::clclclclclclclcl;::;::clclclcl;','",
+                "         `,::clclclclclclclclcl;::;',,'",
+                "           `,::clclclclclclcl;','",
+                "             `,::clclcl;','",
+            ];
+
+            // Simulate uptime
+            const startTime = new Date();
+            function getUptimeString() {
+                const now = new Date();
+                const diff = new Date(now - startTime);
+                const hours = diff.getUTCHours();
+                const minutes = diff.getUTCMinutes();
+                const seconds = diff.getUTCSeconds();
+                 return `${hours}h ${minutes}m ${seconds}s`;
+            }
+
+            // Get browser information
+            const userAgent = navigator.userAgent;
+            let browserName = "Unknown Browser";
+            if (userAgent.match(/firefox|fxios/i)) {
+                browserName = "Firefox";
+            } else if (userAgent.match(/chrome|chromium|crios/i)) {
+                browserName = "Chrome";
+            } else if (userAgent.match(/safari/i)) {
+                browserName = "Safari";
+            } else if (userAgent.match(/edg/i)) {
+                browserName = "Edge";
+            } else if (userAgent.match(/opr/i)) {
+                browserName = "Opera";
+            }
+
+
+            const infoLines = [
+                `<span class="status-username">lumiini@tty</span>`, // Color the username
+                "-----------------",
+                `<span class="status-red-muted">OS:</span> HTML/JS TTY Simulation`, // Color the label
+                `<span class="status-red-muted">Kernel:</span> Browser Engine`, // Color the label
+                `<span class="status-red-muted">Uptime:</span> <span id="uptime-value">${getUptimeString()}</span>`, // Uptime with a span for updating
+                `<span class="status-red-muted">Packages:</span> ∞`, // Color the label
+                `<span class="status-red-muted">Shell:</span> TTY`, // Color the label
+                `<span class="status-red-muted">Browser:</span> ${browserName}`, // Added browser field
+                `<span class="status-red-muted">Resolution:</span> ${window.screen.width}x${window.screen.height}`, // Added resolution
+                `<span class="status-red-muted">Viewport:</span> ${window.innerWidth}x${window.innerHeight}`, // Added viewport size
+
+            ];
+
+            // Create a container for the neofetch output
+            const neofetchContainer = document.createElement('div');
+            neofetchContainer.classList.add('neofetch-output');
+
+            // Create a div for the logo
+            const logoElement = document.createElement('div');
+            logoElement.classList.add('neofetch-logo');
+            logoElement.textContent = logoLines.join('\n'); // Join logo lines with newlines
+
+            // Create a div for the info
+            const infoElement = document.createElement('div');
+            infoElement.classList.add('neofetch-info');
+
+            // Add each info line to the info div as a paragraph
+            infoLines.forEach(line => {
+                const p = document.createElement('p');
+                p.innerHTML = line; // Use innerHTML to render spans for coloring
+                infoElement.appendChild(p);
+            });
+
+            // Append the logo and info divs to the container
+            neofetchContainer.appendChild(logoElement);
+            neofetchContainer.appendChild(infoElement);
+
+            // Append the container to the output area
+            outputDiv.appendChild(neofetchContainer);
+            outputDiv.scrollTop = outputDiv.scrollHeight; // Auto-scroll
+
+            // Start updating uptime every second
+            const uptimeElement = document.getElementById('uptime-value');
+            if (uptimeElement) {
+                 uptimeInterval = setInterval(() => {
+                    uptimeElement.textContent = getUptimeString();
+                 }, 1000);
+            }
+
+             print(""); // Add a blank line after neofetch output
+        }
+
 
         // Event listener for the main command input field
         mainInput.addEventListener('keypress', function(event) {
@@ -313,6 +458,11 @@
                          print("Redirecting to homepage..."); // Optional message
                          // Hide the input line before redirecting
                          mainInputLine.classList.add('hidden');
+                         // Clear uptime interval before redirecting
+                         if (uptimeInterval) {
+                             clearInterval(uptimeInterval);
+                             uptimeInterval = null;
+                         }
                          setTimeout(() => {
                              window.location.href = 'https://lumiini.github.io/lumiini'; // Redirect to lumiini.github.io/lumiini
                          }, 1000); // Delay before redirecting
@@ -322,18 +472,32 @@
                         print("Starting X server..."); // Optional message
                         // Hide the input line before redirecting
                         mainInputLine.classList.add('hidden');
+                         // Clear uptime interval before redirecting
+                         if (uptimeInterval) {
+                             clearInterval(uptimeInterval);
+                             uptimeInterval = null;
+                         }
                          setTimeout(() => {
                             window.location.href = '/startx/x.html'; // Redirect to the new URL
                          }, 1000); // Delay before redirecting
                         break;
-                    case '5': // Case for the new "clear" command
+                    case '5': // Case for the new "neofetch" command
+                    case 'neofetch': // Added case for command string
+                        showNeofetch(); // Call the neofetch function
+                        break;
+                    case '6': // Updated case number for clear
                     case 'clear': // Added case for command string
+                         // Clear uptime interval before clearing output
+                         if (uptimeInterval) {
+                             clearInterval(uptimeInterval);
+                             uptimeInterval = null;
+                         }
                         outputDiv.innerHTML = ''; // Clear the output area
                         // After clearing, re-show the main prompt and options
                         showMainPrompt();
                         break;
                     default:
-                        print("Invalid input. Please enter 1, 2, 3, 4, 5, or the command."); // Updated error message
+                        print("Invalid input. Please enter 1, 2, 3, 4, 5, 6 or the command."); // Updated error message
                         break;
                 }
                 // After processing, ensure the input is focused again for the next command
