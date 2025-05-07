@@ -10,7 +10,7 @@
             color: #fff; /* White text */
             font-family: 'Courier New', Courier, monospace; /* Monospace font */
             margin: 0;
-            padding: 20px 0; /* Removed horizontal padding */
+            padding: 0 20px; /* Added horizontal padding back for spacing */
             overflow-y: hidden; /* Hide vertical scrollbar */
             height: 100vh; /* Full viewport height */
             box-sizing: border-box;
@@ -29,9 +29,9 @@
 
 
         .tty-container {
-            width: 100%;
-            max-width: 800px; /* Limit width for better readability */
-            margin: 0 auto; /* Center the container */
+            width: 100%; /* Use full width */
+            /* Removed max-width */
+            /* Removed margin: 0 auto; */
         }
 
         .tty-output {
@@ -41,6 +41,8 @@
             min-height: calc(100vh - 80px); /* Ensure output area takes up most space */
             overflow-y: auto; /* Keep programmatic scrolling */
             height: calc(100vh - 80px); /* Explicit height for scrolling area */
+            display: flex; /* Use flexbox for output lines */
+            flex-direction: column; /* Stack lines vertically */
         }
 
          /* Hide scrollbar for tty-output on different browsers */
@@ -51,6 +53,18 @@
         .tty-output {
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Style for each output line to use flexbox for alignment */
+        .tty-line {
+            display: flex;
+            justify-content: space-between; /* Push items to the ends */
+            width: 100%; /* Take full width of the container */
+        }
+
+        .tty-line .message {
+            flex-grow: 1; /* Allow message to take available space */
+            white-space: pre; /* Preserve spaces in the message */
         }
 
 
@@ -100,7 +114,6 @@
 
     <script>
         const outputDiv = document.getElementById('output');
-        // Removed loginInput and loginInputLine as they are no longer needed for inline typing
         const mainInput = document.getElementById('main-input');
         const mainInputLine = document.getElementById('main-input-line');
 
@@ -110,6 +123,28 @@
             // Auto-scroll to the bottom
             outputDiv.scrollTop = outputDiv.scrollHeight;
         }
+
+         // Function to print a line with optional status aligned to the right
+        function printLineWithStatus(message, status = '') {
+            const lineElement = document.createElement('div');
+            lineElement.classList.add('tty-line');
+
+            const messageSpan = document.createElement('span');
+            messageSpan.classList.add('message');
+            messageSpan.textContent = message; // Use textContent to avoid interpreting HTML in message
+
+            lineElement.appendChild(messageSpan);
+
+            if (status) {
+                const statusSpan = document.createElement('span');
+                statusSpan.innerHTML = status; // Use innerHTML for colored status text
+                lineElement.appendChild(statusSpan);
+            }
+
+            outputDiv.appendChild(lineElement);
+            outputDiv.scrollTop = outputDiv.scrollHeight; // Auto-scroll
+        }
+
 
         // Function to show the main command prompt
         function showMainPrompt() {
@@ -198,25 +233,20 @@
             ];
 
             const statusText = '<span class="status-blue">[</span><span class="status-green"> started </span><span class="status-blue">]</span>';
-            const totalWidth = 80; // Approximate total width of a TTY line for alignment
-            const statusWidth = statusText.replace(/<[^>]*>/g, '').length; // Calculate width of status text without HTML tags
 
             let i = 0;
             function displayNextMessage() {
                 if (i < initMessages.length) {
                     const message = initMessages[i];
-                    let lineToPrint = message;
 
                     // If it's not the last message (which is just spacing)
                     if (i < initMessages.length - 1) {
-                         // Calculate padding needed to push status to the right
-                         const messageLength = message.replace(/\* /g, '').length; // Consider length without the "* " prefix
-                         const paddingLength = Math.max(1, totalWidth - messageLength - statusWidth - 2); // Calculate padding, ensure at least 1 space
-                         const padding = ' '.repeat(paddingLength);
-                         lineToPrint = message + padding + statusText;
+                         // Use the new function to print message with status
+                         printLineWithStatus(message, statusText);
+                    } else {
+                        // Just print the last message (spacing or final complete message)
+                        print(message);
                     }
-
-                    print(lineToPrint); // Print the message with padding and status
 
                     i++;
                     setTimeout(displayNextMessage, 300); // Adjust delay as needed
@@ -283,9 +313,9 @@
                         print("Starting X server..."); // Optional message
                         // Hide the input line before redirecting
                         mainInputLine.classList.add('hidden');
-                        setTimeout(() => {
+                         setTimeout(() => {
                             window.location.href = '/startx/x.html'; // Redirect to the new URL
-                        }, 1000); // Delay before redirecting
+                         }, 1000); // Delay before redirecting
                         break;
                     case '5': // Case for the new "clear" command
                     case 'clear': // Added case for command string
