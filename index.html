@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello</title> <style>
+    <title>Hello</title>
+    <style>
         body {
             background-color: #000; /* Black background */
             color: #fff; /* White text */
@@ -227,11 +228,11 @@
                 "* Loading HTML core ...",
                 "* Initializing filesystem ...",
                 "* Starting tty simulation service ...",
-                "* Booting complete.",
-                "" // Empty line for spacing
+                "* Booting complete.", // This message will get the [ success ] status
             ];
 
-            const statusText = '<span class="status-blue">[</span><span class="status-green"> started </span><span class="status-blue">]</span>';
+            const startedStatusText = '<span class="status-blue">[</span><span class="status-green"> started </span><span class="status-blue">]</span>';
+            const successStatusText = '<span class="status-blue">[</span><span class="status-green"> success </span><span class="status-blue">]</span>'; // New success status text
 
             // Print the "Starting cinit 0.0.2 alpha" message in blue before the init sequence
             print('<span class="status-blue">Starting cinit 0.0.2 alpha</span>');
@@ -241,23 +242,27 @@
             function displayNextMessage() {
                 if (i < initMessages.length) {
                     const message = initMessages[i];
+                    let statusToUse = '';
 
-                    // If it's not the last message (which is just spacing)
-                    if (i < initMessages.length - 1) {
-                         // Use the new function to print message with status
-                         printLineWithStatus(message, statusText);
-                    } else {
-                        // Just print the last message (spacing or final complete message)
-                        print(message);
+                    // Determine which status to use
+                    if (message === "* Booting complete.") {
+                        statusToUse = successStatusText;
+                    } else { // For other messages
+                        statusToUse = startedStatusText;
                     }
+
+                    // Use the function to print message with the determined status
+                    printLineWithStatus(message, statusToUse);
 
                     i++;
                     setTimeout(displayNextMessage, 300); // Adjust delay as needed
 
                 } else {
-                    // After init messages, display the welcome message
-                    print("Welcome to Linus Torvalds' dream!");
-                    print(""); // Add a blank line
+                    // After init messages, add an extra blank line
+                    print(""); // Added extra blank line here
+                    // Then display the welcome message
+                    print("Welcome to Linus Torvalds' dream!"); // Changed welcome message back
+                    print(""); // Add a blank line after the welcome message
                     // Start auto-typing the login directly into the output
                     startAutoLoginTyping("lumiini", handleLoginSuccess); // Call auto-typing, then success handler
                 }
