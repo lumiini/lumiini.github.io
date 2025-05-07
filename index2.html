@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTY Simulation</title>
+    <style>
+        body {
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+            font-family: 'Courier New', Courier, monospace; /* Monospace font */
+            margin: 0;
+            padding: 20px 0; /* Removed horizontal padding */
+            overflow-y: hidden; /* Hide vertical scrollbar */
+            height: 100vh; /* Full viewport height */
+            box-sizing: border-box;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        body {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+
+        .tty-container {
+            width: 100%;
+            max-width: 800px; /* Limit width for better readability */
+            margin: 0 auto; /* Center the container */
+        }
+
+        .tty-output {
+            white-space: pre-wrap; /* Preserve whitespace and wrap text */
+            word-wrap: break-word; /* Break long words */
+            margin-bottom: 10px;
+            min-height: calc(100vh - 80px); /* Ensure output area takes up most space */
+            overflow-y: auto; /* Keep programmatic scrolling */
+            height: calc(100vh - 80px); /* Explicit height for scrolling area */
+        }
+
+         /* Hide scrollbar for tty-output on different browsers */
+        .tty-output::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tty-output {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+
+        .tty-input-line {
+            display: flex;
+            align-items: center;
+        }
+
+        .tty-prompt {
+            margin-right: 5px;
+            white-space: pre; /* Preserve space in the prompt */
+        }
+
+        .tty-input {
+            background-color: transparent; /* Transparent background */
+            color: #fff; /* White text */
+            border: none; /* No border */
+            outline: none; /* No outline on focus */
+            flex-grow: 1; /* Take up remaining space */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1em;
+            caret-color: #fff; /* White cursor */
+        }
+
+        /* Hide input lines initially */
+        .hidden {
+            display: none;
+        }
+
+        /* Styles for the colored init status */
+        .status-blue {
+            color: #6495ED; /* Cornflower Blue - less vibrant */
+        }
+
+        .status-green {
+            color: #90EE90; /* Light Green - less vibrant */
+        }
+    </style>
+</head>
+<body>
+    <div class="tty-container">
+        <div class="tty-output" id="output"></div>
+        <div class="tty-input-line hidden" id="main-input-line">
+            <span class="tty-prompt">~ $</span> <input type="text" class="tty-input" id="main-input">
+        </div>
+    </div>
+
+    <script>
+        const outputDiv = document.getElementById('output');
+        // Removed loginInput and loginInputLine as they are no longer needed for inline typing
+        const mainInput = document.getElementById('main-input');
+        const mainInputLine = document.getElementById('main-input-line');
+
+        // Function to print text to the output area
+        function print(text) {
+            outputDiv.innerHTML += text + '\n';
+            // Auto-scroll to the bottom
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+
+        // Function to show the main command prompt
+        function showMainPrompt() {
+            // The prompt is now in the HTML structure, just show the input line
+            mainInputLine.classList.remove('hidden'); // Show the main input field
+            mainInput.focus(); // Focus the main input field
+
+            // Print the options after the prompt is visible
+            // Color the first line green and indent the list items
+            print('<span class="status-green">Enter a number (1-5) or the command:</span>'); // Updated prompt text to 1-5
+            print("  1) cat lumiini.txt"); // Indented
+            print("  2) finnish");         // Indented
+            print("  3) homepage");        // Added new option
+            print("  4) Startx");          // Updated option number and text
+            print("  5) clear");           // Added new clear option
+        }
+
+        // Function to simulate auto-typing the username directly into the output
+        function startAutoLoginTyping(username, callback) {
+            let i = 0;
+            const loginPromptText = "Login: "; // Capitalized Login
+            // Print the initial login prompt text followed by a space
+            outputDiv.innerHTML += loginPromptText + ' '; // Added space here as requested
+
+            function typeCharacter() {
+                if (i < username.length) {
+                    // Append the next character to the last line of the output
+                    // This is a simple way to simulate typing on the same line
+                    outputDiv.innerHTML = outputDiv.innerHTML.slice(0, -1) + username.charAt(i) + '_'; // Add cursor simulation
+                    i++;
+                    outputDiv.scrollTop = outputDiv.scrollHeight; // Keep scrolling
+                    setTimeout(typeCharacter, 100); // Adjust typing speed here (milliseconds)
+                } else {
+                    // Typing complete, remove cursor and add a newline
+                    outputDiv.innerHTML = outputDiv.innerHTML.slice(0, -1) + '\n'; // Remove cursor and add newline
+                    outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to the end
+                    if (callback) {
+                        callback(); // Call the next step (handle login)
+                    }
+                }
+            }
+
+            typeCharacter(); // Start typing
+        }
+
+        // Function to simulate auto-typing the password (as asterisks) directly into the output
+        function startAutoPasswordTyping(passwordLength, callback) {
+             let i = 0;
+             const passwordPromptText = "Password: ";
+             // Print the initial password prompt text on the current line
+             outputDiv.innerHTML += passwordPromptText;
+
+             function typeCharacter() {
+                 if (i < passwordLength) {
+                     // Append the next asterisk to the last line of the output
+                     outputDiv.innerHTML = outputDiv.innerHTML.slice(0, -1) + '*' + '_'; // Add cursor simulation
+                     i++;
+                     outputDiv.scrollTop = outputDiv.scrollHeight; // Keep scrolling
+                     setTimeout(typeCharacter, 100); // Adjust typing speed here (milliseconds)
+                 } else {
+                     // Typing complete, remove cursor and add a newline
+                     outputDiv.innerHTML = outputDiv.innerHTML.slice(0, -1) + '\n'; // Remove cursor and add newline
+                     outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to the end
+                     if (callback) {
+                         callback(); // Call the next step (show main prompt)
+                     }
+                 }
+             }
+             // Add initial cursor to the password line
+             outputDiv.innerHTML += '_';
+             typeCharacter(); // Start typing
+         }
+
+
+        // Function to run the initialization sequence
+        function runInitSequence() {
+            // Initialization messages
+            const initMessages = [
+                "* Starting framebuffer ...",
+                "* Booting init ...",
+                "* Loading HTML core ...",
+                "* Initializing filesystem ...",
+                "* Starting tty simulation service ...",
+                "* Booting complete.",
+                "" // Empty line for spacing
+            ];
+
+            const statusText = '<span class="status-blue">[</span><span class="status-green"> started </span><span class="status-blue">]</span>';
+            const totalWidth = 80; // Approximate total width of a TTY line for alignment
+            const statusWidth = statusText.replace(/<[^>]*>/g, '').length; // Calculate width of status text without HTML tags
+
+            let i = 0;
+            function displayNextMessage() {
+                if (i < initMessages.length) {
+                    const message = initMessages[i];
+                    let lineToPrint = message;
+
+                    // If it's not the last message (which is just spacing)
+                    if (i < initMessages.length - 1) {
+                         // Calculate padding needed to push status to the right
+                         const messageLength = message.replace(/\* /g, '').length; // Consider length without the "* " prefix
+                         const paddingLength = Math.max(1, totalWidth - messageLength - statusWidth - 2); // Calculate padding, ensure at least 1 space
+                         const padding = ' '.repeat(paddingLength);
+                         lineToPrint = message + padding + statusText;
+                    }
+
+                    print(lineToPrint); // Print the message with padding and status
+
+                    i++;
+                    setTimeout(displayNextMessage, 300); // Adjust delay as needed
+
+                } else {
+                    // After init messages, display the welcome message
+                    print("Welcome to Linus Torvalds' dream!");
+                    print(""); // Add a blank line
+                    // Start auto-typing the login directly into the output
+                    startAutoLoginTyping("lumiini", handleLoginSuccess); // Call auto-typing, then success handler
+                }
+            }
+
+            displayNextMessage(); // Start the sequence
+        }
+
+        // Function to handle the successful auto-login (now triggers password typing)
+        function handleLoginSuccess() {
+            const simulatedPasswordLength = 10; // Length of the password to simulate with asterisks
+            startAutoPasswordTyping(simulatedPasswordLength, showLoginSuccessfulAndPrompt);
+        }
+
+        // Function to show "Login successful." and then the main prompt
+        function showLoginSuccessfulAndPrompt() {
+             print("Login successful.");
+             print(""); // Add a blank line
+             // Directly show the main prompt after successful auto-login
+             setTimeout(showMainPrompt, 500); // Delay before showing main prompt
+        }
+
+
+        // Event listener for the main command input field
+        mainInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const command = mainInput.value.trim();
+                // Echo the command with the full prompt
+                print("~ $ " + command); // Echo the command with updated prompt
+
+                mainInput.value = ''; // Clear the input field
+                // No need to hide the input line, just clear the value
+                // mainInputLine.classList.add('hidden'); // Hide input while processing
+
+                // Handle both numeric and command string inputs
+                switch (command) {
+                    case '1':
+                    case 'cat lumiini.txt': // Added case for command string
+                        print("Hello");
+                        break;
+                    case '2':
+                    case 'finnish': // Added case for command string
+                        print("Hei");
+                        break;
+                    case '3':
+                    case 'homepage': // Added case for new command string
+                         print("Redirecting to homepage..."); // Optional message
+                         // Hide the input line before redirecting
+                         mainInputLine.classList.add('hidden');
+                         setTimeout(() => {
+                             window.location.href = 'home.html'; // Redirect to home.html
+                         }, 1000); // Delay before redirecting
+                         break;
+                    case '4': // Updated case number
+                    case 'Startx': // Added case for command string
+                        print("Starting X server..."); // Optional message
+                        // Hide the input line before redirecting
+                        mainInputLine.classList.add('hidden');
+                        setTimeout(() => {
+                            window.location.href = '/startx/x.html'; // Redirect to the new URL
+                        }, 1000); // Delay before redirecting
+                        break;
+                    case '5': // Case for the new "clear" command
+                    case 'clear': // Added case for command string
+                        outputDiv.innerHTML = ''; // Clear the output area
+                        // After clearing, re-show the main prompt and options
+                        showMainPrompt();
+                        break;
+                    default:
+                        print("Invalid input. Please enter 1, 2, 3, 4, 5, or the command."); // Updated error message
+                        break;
+                }
+                // After processing, ensure the input is focused again for the next command
+                // This is handled automatically by the input field not being hidden, except for redirects
+                if (command !== '3' && command !== 'Startx' && command !== 'homepage') {
+                    mainInput.focus();
+                }
+            }
+        });
+
+        // Start the init sequence when the page loads
+        window.onload = function() {
+            runInitSequence();
+        };
+    </script>
+</body>
+</html>
