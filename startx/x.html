@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My page</title>
+    <style>
+        /* Basic styling for the body - Dark Mode */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            color: #eee;
+            background-color: #1a1a1a; /* Dark background color */
+            overflow: hidden; /* Hide any potential overflow from tiles */
+            position: relative; /* Needed for absolute positioning of tiles */
+            min-height: 100vh; /* Minimum height of the viewport */
+            display: flex; /* Use flexbox to center content */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+
+        /* Container for the tiled images */
+        .tile-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allow clicks to pass through to the message container */
+            z-index: -1; /* Place behind the message container */
+        }
+
+        /* Style for each individual tile */
+        .tile {
+            position: absolute;
+            width: 50px; /* Match background-size width */
+            height: 50px; /* Match background-size height */
+            background-image: url('../a.jpg');
+            background-size: cover; /* Ensure the image covers the tile area */
+            transition: transform 0.5s ease; /* Smooth rotation transition */
+            transform-origin: center; /* Rotate around the center of the tile */
+        }
+
+        /* Style for the container holding the message - Dark Mode */
+        .message-container {
+            background-color: rgba(50, 50, 50, 0.8); /* Darker semi-transparent background for readability */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            color: #eee;
+            position: relative; /* Ensure it's above the tiles */
+            z-index: 1;
+        }
+
+        /* Style for the message text */
+        .message-container h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        /* Style for the language selector container */
+        .language-selector {
+            position: absolute;
+            top: 20px; /* Distance from the top */
+            right: 20px; /* Distance from the right */
+            background-color: rgba(50, 50, 50, 0.8); /* Match message container background */
+            padding: 10px 15px; /* Padding around the selector */
+            border-radius: 10px; /* Match message container border-radius */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Match message container shadow */
+            z-index: 2; /* Ensure it's above everything else */
+        }
+
+        /* Style for the select element */
+        .language-selector select {
+            background-color: transparent; /* Make select background transparent */
+            border: none; /* Remove default border */
+            color: #eee; /* Light text color */
+            font-size: 1em; /* Adjust font size */
+            cursor: pointer; /* Indicate it's clickable */
+            outline: none; /* Remove outline on focus */
+        }
+
+        /* Style for the options within the select */
+        .language-selector select option {
+            background-color: #333; /* Dark background for dropdown options */
+            color: #eee; /* Light text for dropdown options */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tile-container">
+        </div>
+
+    <div class="language-selector">
+        <select id="language-select">
+            <option value="en">English</option>
+            <option value="fi">Suomi</option>
+        </select>
+    </div>
+
+    <div class="message-container">
+        <h1>こんにちは<h1>
+        <h1>Hey, I'm Lumiini, I'm interested in linux (i guess) also why are you here?</h1>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tileContainer = document.querySelector('.tile-container');
+            const tileSize = 50; // Must match the width and height in .tile CSS
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            // Calculate number of tiles needed
+            const numCols = Math.ceil(viewportWidth / tileSize);
+            const numRows = Math.ceil(viewportHeight / tileSize);
+
+            // Create and append tiles
+            function createTiles() {
+                // Clear existing tiles
+                tileContainer.innerHTML = '';
+                const currentViewportWidth = window.innerWidth;
+                const currentViewportHeight = window.innerHeight;
+                const currentNumCols = Math.ceil(currentViewportWidth / tileSize);
+                const currentNumRows = Math.ceil(currentViewportHeight / tileSize);
+
+                for (let i = 0; i < currentNumRows; i++) {
+                    for (let j = 0; j < currentNumCols; j++) {
+                        const tile = document.createElement('div');
+                        tile.classList.add('tile');
+                        tile.style.top = `${i * tileSize}px`;
+                        tile.style.left = `${j * tileSize}px`;
+                        const rotation = Math.floor(Math.random() * 4) * 90;
+                        tile.style.transform = `rotate(${rotation}deg)`;
+                        tileContainer.appendChild(tile);
+                    }
+                }
+            }
+
+            createTiles(); // Create tiles on initial load
+
+            // Regenerate tiles on window resize for responsiveness
+            window.addEventListener('resize', createTiles);
+
+            // Language selector logic
+            const languageSelect = document.getElementById('language-select');
+
+            languageSelect.addEventListener('change', (event) => {
+                const selectedLanguage = event.target.value;
+                if (selectedLanguage === 'en') {
+                    window.location.href = 'index.html'; // Navigate to index.html for English
+                } else if (selectedLanguage === 'fi') {
+                    window.location.href = 'fi.html'; // Navigate to fi.html for Finnish
+                }
+            });
+
+            // Optional: Set initial selector value based on current page
+            const currentPage = window.location.pathname.split('/').pop();
+            if (currentPage === 'fi.html') {
+                languageSelect.value = 'fi';
+            } else {
+                languageSelect.value = 'en';
+            }
+        });
+    </script>
+
+</body>
+</html>
