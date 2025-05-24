@@ -1,0 +1,84 @@
+/* styles.css - Add your styles here */
+body {
+    margin: 0;
+    padding: 0;
+    background: #111;
+    overflow: hidden;
+}
+
+.background-tiles {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    gap: 0;
+}
+.background-tile {
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    transform: skew(-20deg) scale(1.1);
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.08);
+    opacity: 0;
+    transition: opacity 0.7s, background 0.7s;
+}
+.background-tile.visible {
+    opacity: 0.13;
+}
+.background-tile.img {
+    background: url('a.jpg') center/cover no-repeat;
+}
+.background-tile.img.visible {
+    opacity: 0.35;
+}
+.background-tile:not(.visible) {
+    opacity: 0;
+}
+.background-tile.tilted-text {
+    font-family: inherit;
+    font-size: 1.3vw;
+    font-weight: 900;
+    color: #fff;
+    text-align: center;
+    text-shadow:
+        0 0 64px #fff,
+        0 0 128px #fff,
+        0 0 256px #fff,
+        0 0 512px #fff,
+        0 0 128px #4f8cff,
+        0 0 256px #4f8cff;
+    transform: skew(-20deg) scale(1.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.08em;
+    user-select: none;
+    pointer-events: none;
+    filter: brightness(7) drop-shadow(0 0 48px #fff);
+}
+
+.pill-bg {
+    background: rgba(10, 10, 20, 0.92);
+    border-radius: 3vw;
+    padding: 2.5vw 5vw;
+    box-shadow: 0 4px 48px 0 #000, 0 0 0 2px #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30vw;
+    max-width: 80vw;
+    min-height: 7vw;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 24px #222);
+}
+.pill-text {
+    color: #fff;
+    text-align: center;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    text-shadow: 0 0 16px #222, 0 0 32px #4f8cff;
+}

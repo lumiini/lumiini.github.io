@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Tiles Background</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body style="margin:0;padding:0;overflow:hidden;">
+    <div class="background-tiles"></div>
+    <script>
+    (function() {
+      const grid = document.querySelector('.background-tiles');
+      const cols = 16, rows = 9, total = cols * rows;
+      let tiles = [];
+      const greetings = ["Hello", "Moi", "Tere", "Hallå", "Tēriņtš"];
+      // Create all tiles once
+      for (let y = 0; y < rows; ++y) {
+        for (let x = 0; x < cols; ++x) {
+          const tile = document.createElement('div');
+          tile.className = 'background-tile';
+          tile.style.setProperty('--x', x);
+          tile.style.setProperty('--y', y);
+          grid.appendChild(tile);
+          tiles.push(tile);
+        }
+      }
+      // Helper to check neighbors
+      function hasNeighbor(arr, x, y, type) {
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            if (dx === 0 && dy === 0) continue;
+            const nx = x + dx, ny = y + dy;
+            if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+              if (arr[ny * cols + nx] === type) return true;
+            }
+          }
+        }
+        return false;
+      }
+      // Each tile gets its own fade timer, staggered
+      function fadeTile(tile, delay, i) {
+        setTimeout(function loop() {
+          // Build a map of current tile types
+          const types = tiles.map(t => t.dataset.type || '');
+          const x = i % cols, y = Math.floor(i / cols);
+          // 7% chance to be an img tile, but not next to another img
+          let isImg = false;
+          if (Math.random() < 0.07 && !hasNeighbor(types, x, y, 'img')) isImg = true;
+          // 10% chance to display text, but not next to another text
+          let greeting = '';
+          let isGreeting = false;
+          if (!isImg && Math.random() < 0.10 && !hasNeighbor(types, x, y, 'txt')) {
+            if (Math.random() < 0.20) {
+              greeting = greetings[Math.floor(Math.random() * greetings.length)];
+              isGreeting = true;
+            }
+          }
+          const isVisible = isImg || isGreeting || Math.random() < 0.6;
+          tile.className = 'background-tile' + (isImg ? ' img' : '') + (isVisible ? ' visible' : '') + (isGreeting ? ' tilted-text' : '');
+          tile.textContent = isGreeting ? greeting : '';
+          tile.dataset.type = isImg ? 'img' : (isGreeting ? 'txt' : '');
+          const next = 1200 + Math.random() * 800;
+          setTimeout(loop, next);
+        }, delay);
+      }
+      tiles.forEach((tile, i) => {
+        fadeTile(tile, Math.random() * 1500, i);
+      });
+    })();
+    </script>
+    <iframe src="main.html" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:100;background:transparent;border:none;pointer-events:auto;" allowtransparency="true"></iframe>
+</body>
+</html>
